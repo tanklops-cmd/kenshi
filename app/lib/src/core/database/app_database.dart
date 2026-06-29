@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
 
 const _databaseFileName = 'kendo_companion.sqlite3';
+const appDatabaseSchemaVersion = 1;
 
 final appDatabaseProvider = Provider<sqflite.Database>((ref) {
   throw StateError('The application database has not been initialised.');
@@ -18,8 +19,67 @@ Future<sqflite.Database> openAppDatabase() async {
 
   if (Platform.isWindows) {
     sqflite_ffi.sqfliteFfiInit();
-    return sqflite_ffi.databaseFactoryFfi.openDatabase(databasePath);
+    return openAppDatabaseAtPath(
+      databaseFactory: sqflite_ffi.databaseFactoryFfi,
+      databasePath: databasePath,
+    );
   }
 
-  return sqflite.databaseFactorySqflitePlugin.openDatabase(databasePath);
+  return openAppDatabaseAtPath(
+    databaseFactory: sqflite.databaseFactorySqflitePlugin,
+    databasePath: databasePath,
+  );
+}
+
+Future<sqflite.Database> openAppDatabaseAtPath({
+  required sqflite.DatabaseFactory databaseFactory,
+  required String databasePath,
+}) {
+  return databaseFactory.openDatabase(
+    databasePath,
+    options: sqflite.OpenDatabaseOptions(
+      version: appDatabaseSchemaVersion,
+      onCreate: (database, version) =>
+          _migrateDatabase(database, oldVersion: 0, newVersion: version),
+      onUpgrade: (database, oldVersion, newVersion) => _migrateDatabase(
+        database,
+        oldVersion: oldVersion,
+        newVersion: newVersion,
+      ),
+    ),
+  );
+}
+
+Future<void> _migrateDatabase(
+  sqflite.Database database, {
+  required int oldVersion,
+  required int newVersion,
+}) async {
+  if (oldVersion < 1 && newVersion >= 1) {
+    await database.execute('''
+      CREATE TABLE sessions (
+        id TEXT PRIMARY KEY NOT NULL,
+        created_at INTEGER NOT NULL,
+        training_date TEXT NOT NULL,
+        session_type TEXT NOT NULL CHECK (
+          session_type IN (
+            'clubKeiko',
+            'seminar',
+            'shiai',
+            'grading',
+            'homeTraining',
+            'other'
+          )
+        ),
+        title TEXT NOT NULL CHECK (length(trim(title)) > 0),
+        location TEXT,
+        notes TEXT,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+    await database.execute('''
+      CREATE INDEX index_sessions_training_date
+      ON sessions (training_date DESC, created_at DESC)
+    ''');
+  }
 }
