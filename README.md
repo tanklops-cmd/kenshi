@@ -2,7 +2,7 @@
 
 A premium, offline-first deliberate practice companion for committed kendoka.
 
-This repository is structured so documentation is the source of truth before development begins.
+The documents in [`/docs`](docs/) are the authoritative source of truth for the project.
 
 ## Core Purpose
 
@@ -12,10 +12,10 @@ Help serious kendoka remember, connect, and apply what they learn so every keiko
 
 ```text
 /docs   Product documentation, decisions, specs, roadmap
-/app    Flutter application source code once development begins
+/app    Flutter application source code
 /assets Design and brand assets once created
 ```
 
 ## Development Rule
 
-Codex or any developer must read `/docs` before making implementation decisions.
+Codex and all contributors must read [`/docs`](docs/) before making implementation decisions.
