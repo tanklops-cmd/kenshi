@@ -7,6 +7,8 @@ abstract final class AppRoutes {
   static const newPracticeTopic = '/practice/new-topic';
   static const practiceTopicDetail = '/practice/topics/:topicId';
   static const learn = '/learn';
+  static const learnCategory = '/learn/categories/:category';
+  static const learnTopicDetail = '/learn/topics/:topicId';
   static const prepare = '/prepare';
 
   static String sessionDetailLocation(String sessionId) {
@@ -15,5 +17,13 @@ abstract final class AppRoutes {
 
   static String practiceTopicDetailLocation(String topicId) {
     return '/practice/topics/${Uri.encodeComponent(topicId)}';
+  }
+
+  static String learnCategoryLocation(String category) {
+    return '/learn/categories/${Uri.encodeComponent(category)}';
+  }
+
+  static String learnTopicDetailLocation(String topicId) {
+    return '/learn/topics/${Uri.encodeComponent(topicId)}';
   }
 }

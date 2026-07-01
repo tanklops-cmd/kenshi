@@ -2,7 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kendo_companion/src/core/navigation/app_routes.dart';
 import 'package:kendo_companion/src/core/navigation/app_shell.dart';
+import 'package:kendo_companion/src/features/learn/domain/learn_topic.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_screen.dart';
+import 'package:kendo_companion/src/features/learn/presentation/learn_topic_detail_screen.dart';
+import 'package:kendo_companion/src/features/learn/presentation/learn_topic_list_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/new_practice_topic_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_topic_detail_screen.dart';
@@ -83,6 +86,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.practiceTopicDetail,
         builder: (context, state) {
           return PracticeTopicDetailScreen(
+            topicId: state.pathParameters['topicId']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.learnCategory,
+        builder: (context, state) {
+          return LearnTopicListScreen(
+            category: LearnCategory.values.byName(
+              state.pathParameters['category']!,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.learnTopicDetail,
+        builder: (context, state) {
+          return LearnTopicDetailScreen(
             topicId: state.pathParameters['topicId']!,
           );
         },
