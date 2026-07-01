@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
 
 const _databaseFileName = 'kendo_companion.sqlite3';
-const appDatabaseSchemaVersion = 3;
+const appDatabaseSchemaVersion = 4;
 
 final appDatabaseProvider = Provider<sqflite.Database>((ref) {
   throw StateError('The application database has not been initialised.');
@@ -105,5 +105,36 @@ Future<void> _migrateDatabase(
     await database.execute(
       'ALTER TABLE sessions ADD COLUMN next_focus_created_at INTEGER',
     );
+  }
+
+  if (oldVersion < 4 && newVersion >= 4) {
+    await database.execute('''
+      CREATE TABLE practice_topics (
+        id TEXT PRIMARY KEY NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        category TEXT NOT NULL CHECK (
+          category IN (
+            'fundamentals',
+            'shikakeWaza',
+            'ojiWaza',
+            'hikiWaza',
+            'tsuki',
+            'footwork',
+            'kamae',
+            'kihon',
+            'other'
+          )
+        ),
+        name TEXT NOT NULL CHECK (length(trim(name)) > 0),
+        current_state TEXT NOT NULL DEFAULT '',
+        mental_cues TEXT NOT NULL DEFAULT '',
+        archived INTEGER NOT NULL DEFAULT 0 CHECK (archived IN (0, 1))
+      )
+    ''');
+    await database.execute('''
+      CREATE INDEX index_practice_topics_active
+      ON practice_topics (archived, updated_at DESC)
+    ''');
   }
 }

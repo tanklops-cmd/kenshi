@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:kendo_companion/src/core/navigation/app_routes.dart';
 import 'package:kendo_companion/src/core/navigation/app_shell.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_screen.dart';
+import 'package:kendo_companion/src/features/practice/presentation/new_practice_topic_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_screen.dart';
+import 'package:kendo_companion/src/features/practice/presentation/practice_topic_detail_screen.dart';
 import 'package:kendo_companion/src/features/prepare/presentation/prepare_screen.dart';
 import 'package:kendo_companion/src/features/reflect/presentation/reflect_screen.dart';
 import 'package:kendo_companion/src/features/session/presentation/new_session_screen.dart';
@@ -70,6 +72,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           return SessionDetailScreen(
             sessionId: state.pathParameters['sessionId']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.newPracticeTopic,
+        builder: (context, state) => const NewPracticeTopicScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.practiceTopicDetail,
+        builder: (context, state) {
+          return PracticeTopicDetailScreen(
+            topicId: state.pathParameters['topicId']!,
           );
         },
       ),

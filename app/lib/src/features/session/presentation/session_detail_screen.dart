@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kendo_companion/src/core/widgets/autosave_text_field.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 import 'package:kendo_companion/src/features/session/domain/session_review_updates.dart';
-import 'package:kendo_companion/src/features/session/presentation/widgets/autosave_text_field.dart';
 
 class SessionDetailScreen extends ConsumerWidget {
   const SessionDetailScreen({required this.sessionId, super.key});
