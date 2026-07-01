@@ -16,14 +16,14 @@ abstract final class AppTheme {
 
     final colorScheme = isDark
         ? baseScheme.copyWith(
-            surface: const Color(0xFF181715),
-            onSurface: const Color(0xFFEAE5DC),
-            surfaceContainer: const Color(0xFF222120),
-            surfaceContainerHigh: const Color(0xFF282624),
-            surfaceContainerLow: const Color(0xFF1D1C1A),
-            surfaceContainerLowest: const Color(0xFF131210),
+            surface: const Color(0xFF161514),
+            onSurface: const Color(0xFFEDE8DF),
+            surfaceContainer: const Color(0xFF201F1D),
+            surfaceContainerHigh: const Color(0xFF262422),
+            surfaceContainerLow: const Color(0xFF1B1A18),
+            surfaceContainerLowest: const Color(0xFF111010),
             outline: const Color(0xFF6B6558),
-            outlineVariant: const Color(0xFF3D3B35),
+            outlineVariant: const Color(0xFF3B3930),
             onSurfaceVariant: const Color(0xFFCBC4B7),
           )
         : baseScheme.copyWith(
@@ -140,8 +140,9 @@ abstract final class AppTheme {
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       listTileTheme: ListTileThemeData(
+        // Generous vertical padding — space communicates respect.
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -150,6 +151,11 @@ abstract final class AppTheme {
         color: colorScheme.outlineVariant,
         space: 1,
         thickness: 0.5,
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: colorScheme.primary,
+        linearTrackColor: colorScheme.surfaceContainerHigh,
+        circularTrackColor: Colors.transparent,
       ),
       iconTheme: IconThemeData(
         color: colorScheme.onSurfaceVariant,

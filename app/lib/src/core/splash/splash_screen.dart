@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kendo_companion/src/core/widgets/enso_widget.dart';
+import 'package:kendo_companion/src/core/widgets/koi_motif.dart';
 
 /// Refined launch experience.
 ///
@@ -19,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<double> _opacity;
 
   static const _gold = Color(0xFFC8A84A);
-  static const _darkBg = Color(0xFF131210);
+  static const _darkBg = Color(0xFF111010);
   static const _lightBg = Color(0xFFFFF8EE);
   static const _darkSubtle = Color(0xFFCBC4B7);
   static const _lightSubtle = Color(0xFF5A5248);
@@ -30,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 2200),
     );
 
     // Fade in → hold → fade out.
@@ -38,11 +40,11 @@ class _SplashScreenState extends State<SplashScreen>
       TweenSequenceItem(
         tween: Tween(begin: 0.0, end: 1.0)
             .chain(CurveTween(curve: Curves.easeIn)),
-        weight: 35,
+        weight: 30,
       ),
       TweenSequenceItem(
         tween: Tween(begin: 1.0, end: 1.0),
-        weight: 35,
+        weight: 40,
       ),
       TweenSequenceItem(
         tween: Tween(begin: 1.0, end: 0.0)
@@ -77,37 +79,55 @@ class _SplashScreenState extends State<SplashScreen>
       body: FadeTransition(
         opacity: _opacity,
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              // Japanese kanji for kendo — calm gold accent.
-              Text(
-                '剣道',
-                style: TextStyle(
-                  fontSize: 52,
-                  fontWeight: FontWeight.w300,
-                  color: _gold,
-                  letterSpacing: 14,
-                  height: 1,
-                ),
+              // Ensō behind everything — the universe in a circle.
+              EnsoDecoration(
+                size: 220,
+                strokeWidth: 0.7,
+                opacity: isDark ? 0.09 : 0.07,
               ),
-              const SizedBox(height: 22),
-              SizedBox(
-                width: 40,
-                child: Divider(
-                  color: _gold.withAlpha(180),
-                  thickness: 0.5,
-                ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'Kendo Companion',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: isDark ? _darkSubtle : _lightSubtle,
-                  letterSpacing: 3.5,
-                ),
+              // Identity column on top of the ensō.
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Japanese kanji for kendo — calm gold accent.
+                  Text(
+                    '剣道',
+                    style: TextStyle(
+                      fontSize: 52,
+                      fontWeight: FontWeight.w300,
+                      color: _gold,
+                      letterSpacing: 14,
+                      height: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  SizedBox(
+                    width: 40,
+                    child: Divider(
+                      color: _gold.withAlpha(170),
+                      thickness: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    'Kendo Companion',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: isDark ? _darkSubtle : _lightSubtle,
+                      letterSpacing: 3.5,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Koi — a quiet signature below the identity.
+                  KoiMotif(
+                    size: 68,
+                    opacity: isDark ? 0.16 : 0.13,
+                  ),
+                ],
               ),
             ],
           ),

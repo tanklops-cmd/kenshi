@@ -81,3 +81,18 @@ The atmospheric background (AtmosphericBackground widget) uses extremely faint
 enso-inspired arcs at ~4% gold opacity and is available for per-screen adoption.
 Reduced-motion preferences are respected in both the splash and page transitions.
 Navigation icon for Practice changed from fitness_center to sports_martial_arts.
+
+## DEC-019
+
+Visual identity follows the principle of Ma (間) — intentional space and silence.
+Dark palette deepened: surface 0xFF161514, containers in the 0xFF1B–0xFF26 range,
+providing richer charcoal depth consistent with a premium dojo journal aesthetic.
+EnsoDecoration (open-circle motif) established as a branding / loading element.
+KoiMotif (abstract koi silhouette) established as a recurring quiet signature;
+appears in splash screen, empty states (FeaturePlaceholder), and the atmospheric
+background. Opacity kept ≤ 0.20 throughout — the koi should feel discovered,
+not displayed. ProgressIndicatorTheme set to gold primary colour. ListTile
+vertical padding increased from 4 to 6 px to honour Ma spacing principles.
+enso-inspired arcs at ~4% gold opacity and is available for per-screen adoption.
+Reduced-motion preferences are respected in both the splash and page transitions.
+Navigation icon for Practice changed from fitness_center to sports_martial_arts.

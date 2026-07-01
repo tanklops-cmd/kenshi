@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kendo_companion/src/core/widgets/koi_motif.dart';
 
 class FeaturePlaceholder extends StatelessWidget {
   const FeaturePlaceholder({
@@ -10,8 +11,8 @@ class FeaturePlaceholder extends StatelessWidget {
 
   final String title;
   final String prompt;
-  // Accepted for API compatibility; not rendered — the peaceful layout
-  // avoids generic icon treatments in favour of typographic calm.
+  // Accepted for API compatibility; the peaceful layout uses the koi motif
+  // as an empty-state accent rather than a generic icon.
   final IconData icon;
 
   @override
@@ -26,14 +27,8 @@ class FeaturePlaceholder extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Thin gold accent line — a quiet mark of quality.
-              SizedBox(
-                width: 36,
-                child: Divider(
-                  color: colorScheme.primary.withAlpha(170),
-                  thickness: 0.75,
-                ),
-              ),
+              // Koi — a quiet signature for empty space.
+              const KoiMotif(size: 88, opacity: 0.16),
               const SizedBox(height: 28),
               Text(
                 title,
@@ -60,4 +55,5 @@ class FeaturePlaceholder extends StatelessWidget {
     );
   }
 }
+
 
