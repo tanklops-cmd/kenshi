@@ -29,7 +29,12 @@ void main() {
 
     await tester.fling(categoryScroll, const Offset(0, 1000), 1000);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Techniques'));
+    await tester.scrollUntilVisible(
+      find.text('Shikake-waza'),
+      100,
+      scrollable: categoryScroll,
+    );
+    await tester.tap(find.text('Shikake-waza'));
     await tester.pumpAndSettle();
     expect(find.text('Debana-men'), findsOneWidget);
 
@@ -49,11 +54,11 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.text('Rules'),
-      100,
+      find.text('Footwork'),
+      -100,
       scrollable: categoryScroll,
     );
-    await tester.tap(find.text('Rules'));
+    await tester.tap(find.text('Footwork'));
     await tester.pumpAndSettle();
     expect(find.text('No topics in this category yet.'), findsOneWidget);
   });

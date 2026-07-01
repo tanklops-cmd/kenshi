@@ -63,3 +63,10 @@ No gamification, streaks, social feeds, or achievement spam in Version 1.
 ## DEC-016
 
 Product freeze applies until Version 1. New ideas go to backlog unless critical.
+
+## DEC-017
+
+Learn Library uses twenty categories reflecting the full scope of kendo study.
+Empty categories remain visible to communicate encyclopedic intent.
+Categories are defined as a Dart enum; article counts are displayed at the category list level.
+Optional fields (difficulty, relatedTopics, references) are defined on LearnTopic for future use but not populated in seed content.

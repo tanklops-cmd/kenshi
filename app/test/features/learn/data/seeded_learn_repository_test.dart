@@ -26,14 +26,18 @@ void main() {
   });
 
   test('filters by category and reads topics by id', () {
-    final fundamentals = repository.topicsForCategory(
-      LearnCategory.fundamentals,
+    final shikakeWaza = repository.topicsForCategory(
+      LearnCategory.shikakeWaza,
     );
+    final semeTopics = repository.topicsForCategory(LearnCategory.seme);
+    final maaiTopics = repository.topicsForCategory(LearnCategory.maai);
 
-    expect(fundamentals.map((topic) => topic.title), ['Seme', 'Maai']);
+    expect(shikakeWaza.map((topic) => topic.title), ['Debana-men']);
+    expect(semeTopics.map((topic) => topic.title), ['Seme']);
+    expect(maaiTopics.map((topic) => topic.title), ['Maai']);
     expect(
       repository.topicById('debana-men')?.category,
-      LearnCategory.techniques,
+      LearnCategory.shikakeWaza,
     );
     expect(repository.topicById('missing'), isNull);
   });

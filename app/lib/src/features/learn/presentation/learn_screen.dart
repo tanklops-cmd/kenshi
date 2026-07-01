@@ -24,6 +24,10 @@ class LearnScreen extends ConsumerWidget {
         separatorBuilder: (context, index) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final category = categories[index];
+          final count = ref
+              .watch(learnRepositoryProvider)
+              .topicsForCategory(category)
+              .length;
 
           return Card(
             child: InkWell(
@@ -41,6 +45,15 @@ class LearnScreen extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
+                    Text(
+                      '$count',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                    const SizedBox(width: 4),
                     const Icon(Icons.chevron_right, size: 18),
                   ],
                 ),

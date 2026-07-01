@@ -7,7 +7,7 @@ class SeededLearnRepository implements LearnRepository {
   static const _topics = [
     LearnTopic(
       id: 'debana-men',
-      category: LearnCategory.techniques,
+      category: LearnCategory.shikakeWaza,
       title: 'Debana-men',
       summary: 'A men strike made as the opponent begins to act.',
       body:
@@ -18,7 +18,7 @@ class SeededLearnRepository implements LearnRepository {
     ),
     LearnTopic(
       id: 'seme',
-      category: LearnCategory.fundamentals,
+      category: LearnCategory.seme,
       title: 'Seme',
       summary: 'Pressure used to create an opportunity before striking.',
       body:
@@ -29,7 +29,7 @@ class SeededLearnRepository implements LearnRepository {
     ),
     LearnTopic(
       id: 'maai',
-      category: LearnCategory.fundamentals,
+      category: LearnCategory.maai,
       title: 'Maai',
       summary: 'The relationship of distance and timing between opponents.',
       body:
@@ -40,7 +40,7 @@ class SeededLearnRepository implements LearnRepository {
     ),
     LearnTopic(
       id: 'kirikaeshi',
-      category: LearnCategory.training,
+      category: LearnCategory.drills,
       title: 'Kirikaeshi',
       summary: 'A paired drill combining a central strike and repeated cuts.',
       body:

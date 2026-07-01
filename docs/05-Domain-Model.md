@@ -86,3 +86,12 @@ Only one Current Intention should be active at a time.
 Curated reference content used in Learn.
 
 Never personal. Never mixed with user reflections.
+
+Each article is represented as a `LearnTopic` with a required category, title, summary,
+and body. Optional fields reserved for future use:
+
+- `difficulty` — a string label such as 'Beginner', 'Intermediate', or 'Advanced'.
+- `relatedTopics` — a list of related topic IDs for cross-linking within the library.
+- `references` — a list of source attributions (books, instructors, videos).
+
+These fields are defined on the model but not populated in the initial seed content.

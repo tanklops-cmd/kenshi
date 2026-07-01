@@ -10,16 +10,32 @@ It answers:
 
 ## Learn Categories
 
-Version 1 may include placeholders for:
+The library is organised into twenty categories. Categories with zero articles remain
+visible to communicate the full scope of the encyclopedia.
 
-- Techniques
 - Fundamentals
+- Footwork
+- Kamae
+- Seme
+- Maai
+- Tenouchi
+- Shikake-waza
+- Oji-waza
+- Hiki-waza
+- Tsuki
+- Kihon
+- Drills
 - Kata
-- Training
+- Shinpan
+- Shiai
+- Reiho
 - Equipment
-- Rules
 - Grading
-- Etiquette
+- Terminology
+- History
+
+Each category maps to a `LearnCategory` enum value in the domain layer.
+Article counts are displayed beside each category on the category list screen.
 
 ## Content Style
 

@@ -1,12 +1,24 @@
 enum LearnCategory {
-  techniques('Techniques'),
   fundamentals('Fundamentals'),
+  footwork('Footwork'),
+  kamae('Kamae'),
+  seme('Seme'),
+  maai('Maai'),
+  tenouchi('Tenouchi'),
+  shikakeWaza('Shikake-waza'),
+  ojiWaza('Oji-waza'),
+  hikiWaza('Hiki-waza'),
+  tsuki('Tsuki'),
+  kihon('Kihon'),
+  drills('Drills'),
   kata('Kata'),
-  training('Training'),
+  shinpan('Shinpan'),
+  shiai('Shiai'),
+  reiho('Reiho'),
   equipment('Equipment'),
-  rules('Rules'),
   grading('Grading'),
-  etiquette('Etiquette');
+  terminology('Terminology'),
+  history('History');
 
   const LearnCategory(this.label);
 
@@ -21,6 +33,9 @@ class LearnTopic {
     required this.summary,
     required this.body,
     this.relatedPracticeTopicName,
+    this.difficulty,
+    this.relatedTopics,
+    this.references,
   });
 
   final String id;
@@ -29,4 +44,16 @@ class LearnTopic {
   final String summary;
   final String body;
   final String? relatedPracticeTopicName;
+
+  /// Optional difficulty label (e.g. 'Beginner', 'Intermediate', 'Advanced').
+  /// Not populated in initial seed content.
+  final String? difficulty;
+
+  /// Optional list of related topic IDs for cross-linking.
+  /// Not populated in initial seed content.
+  final List<String>? relatedTopics;
+
+  /// Optional source references (books, videos, instructors).
+  /// Not populated in initial seed content.
+  final List<String>? references;
 }
