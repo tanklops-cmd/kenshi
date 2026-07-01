@@ -10,6 +10,8 @@ class FeaturePlaceholder extends StatelessWidget {
 
   final String title;
   final String prompt;
+  // Accepted for API compatibility; not rendered — the peaceful layout
+  // avoids generic icon treatments in favour of typographic calm.
   final IconData icon;
 
   @override
@@ -20,28 +22,35 @@ class FeaturePlaceholder extends StatelessWidget {
     return SafeArea(
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 52, vertical: 40),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                size: 40,
-                color: colorScheme.primary.withAlpha(180),
+              // Thin gold accent line — a quiet mark of quality.
+              SizedBox(
+                width: 36,
+                child: Divider(
+                  color: colorScheme.primary.withAlpha(170),
+                  thickness: 0.75,
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               Text(
                 title,
-                style: textTheme.headlineMedium,
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: 0.4,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 prompt,
                 textAlign: TextAlign.center,
-                style: textTheme.bodyLarge?.copyWith(
+                style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  height: 1.6,
+                  height: 1.75,
+                  letterSpacing: 0.15,
                 ),
               ),
             ],
@@ -51,3 +60,4 @@ class FeaturePlaceholder extends StatelessWidget {
     );
   }
 }
+

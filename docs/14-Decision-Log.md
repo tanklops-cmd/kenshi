@@ -70,3 +70,14 @@ Learn Library uses twenty categories reflecting the full scope of kendo study.
 Empty categories remain visible to communicate encyclopedic intent.
 Categories are defined as a Dart enum; article counts are displayed at the category list level.
 Optional fields (difficulty, relatedTopics, references) are defined on LearnTopic for future use but not populated in seed content.
+
+## DEC-018
+
+Visual identity is calm, quiet, and Japanese-influenced.
+The design language evokes a premium kendo journal, not a productivity utility.
+A refined splash screen shows before the main application using the host theme;
+the application under test constructs KendoCompanionApp directly and is unaffected.
+The atmospheric background (AtmosphericBackground widget) uses extremely faint
+enso-inspired arcs at ~4% gold opacity and is available for per-screen adoption.
+Reduced-motion preferences are respected in both the splash and page transitions.
+Navigation icon for Practice changed from fitness_center to sports_martial_arts.

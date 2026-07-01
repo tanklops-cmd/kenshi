@@ -182,18 +182,25 @@ CustomTransitionPage<void> _fadeSlide({
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionDuration: const Duration(milliseconds: 240),
-    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionDuration: const Duration(milliseconds: 280),
+    reverseTransitionDuration: const Duration(milliseconds: 220),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Respect the system's reduced-motion preference.
+      if (MediaQuery.disableAnimationsOf(context)) {
+        return child;
+      }
+
       final fade = CurvedAnimation(
         parent: animation,
-        curve: Curves.easeOut,
-        reverseCurve: Curves.easeIn,
+        curve: Curves.easeInOutCubic,
+        reverseCurve: Curves.easeInCubic,
       );
       final slide = Tween<Offset>(
-        begin: const Offset(0, 0.04),
+        begin: const Offset(0, 0.03),
         end: Offset.zero,
-      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+      ).animate(
+        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+      );
       return FadeTransition(
         opacity: fade,
         child: SlideTransition(position: slide, child: child),

@@ -54,9 +54,9 @@ abstract final class AppTheme {
             : SystemUiOverlayStyle.dark,
         titleTextStyle: TextStyle(
           color: colorScheme.onSurface,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.1,
+          fontSize: 19,
+          fontWeight: FontWeight.w400,
+          letterSpacing: 0.3,
         ),
       ),
       cardTheme: CardThemeData(
@@ -64,38 +64,46 @@ abstract final class AppTheme {
         color: colorScheme.surfaceContainer,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: colorScheme.outlineVariant.withAlpha(isDark ? 60 : 80),
+            width: 0.5,
+          ),
         ),
         margin: EdgeInsets.zero,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colorScheme.surface,
-        indicatorColor: colorScheme.primaryContainer,
+        // Slimmer pill indicator — less assertive, more refined.
+        indicatorColor: colorScheme.primaryContainer.withAlpha(isDark ? 160 : 200),
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return IconThemeData(
               color: colorScheme.onPrimaryContainer,
-              size: 22,
+              size: 21,
             );
           }
           return IconThemeData(
             color: colorScheme.onSurfaceVariant,
-            size: 22,
+            size: 21,
           );
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return TextStyle(
-              fontSize: 12,
-              letterSpacing: 0.5,
+              fontSize: 11,
+              letterSpacing: 0.6,
               color: colorScheme.primary,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             );
           }
           return TextStyle(
-            fontSize: 12,
-            letterSpacing: 0.5,
+            fontSize: 11,
+            letterSpacing: 0.6,
             color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w400,
           );
@@ -165,22 +173,22 @@ abstract final class AppTheme {
       headlineLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.w300,
-        letterSpacing: -0.5,
-        height: 1.25,
+        letterSpacing: -0.8,
+        height: 1.2,
         color: cs.onSurface,
       ),
       headlineMedium: TextStyle(
         fontSize: 24,
-        fontWeight: FontWeight.w400,
-        letterSpacing: -0.25,
-        height: 1.3,
+        fontWeight: FontWeight.w300,
+        letterSpacing: -0.5,
+        height: 1.25,
         color: cs.onSurface,
       ),
       headlineSmall: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w400,
-        letterSpacing: 0,
-        height: 1.35,
+        letterSpacing: -0.2,
+        height: 1.3,
         color: cs.onSurface,
       ),
       titleLarge: TextStyle(
@@ -204,15 +212,15 @@ abstract final class AppTheme {
       bodyLarge: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        letterSpacing: 0.15,
-        height: 1.6,
+        letterSpacing: 0.1,
+        height: 1.65,
         color: cs.onSurface,
       ),
       bodyMedium: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: 0.15,
+        height: 1.6,
         color: cs.onSurface,
       ),
       bodySmall: TextStyle(

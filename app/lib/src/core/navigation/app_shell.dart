@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kendo_companion/src/core/widgets/atmospheric_background.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({required this.navigationShell, super.key});
@@ -17,7 +18,14 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      body: navigationShell,
+      // Atmospheric background is visible during page transitions
+      // when the entering screen is fading in.
+      body: Stack(
+        children: [
+          const Positioned.fill(child: AtmosphericBackground()),
+          navigationShell,
+        ],
+      ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -41,8 +49,8 @@ class AppShell extends StatelessWidget {
                 label: 'Reflect',
               ),
               NavigationDestination(
-                icon: Icon(Icons.fitness_center_outlined),
-                selectedIcon: Icon(Icons.fitness_center),
+                icon: Icon(Icons.sports_martial_arts_outlined),
+                selectedIcon: Icon(Icons.sports_martial_arts),
                 label: 'Practice',
               ),
               NavigationDestination(
@@ -62,3 +70,4 @@ class AppShell extends StatelessWidget {
     );
   }
 }
+
