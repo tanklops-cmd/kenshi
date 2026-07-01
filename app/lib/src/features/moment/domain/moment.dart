@@ -19,6 +19,9 @@ class Moment {
     required this.title,
     required this.note,
     required this.archived,
+    this.sourcePath,
+    this.clipStartMs,
+    this.clipEndMs,
   });
 
   final String id;
@@ -29,6 +32,9 @@ class Moment {
   final String title;
   final String note;
   final bool archived;
+  final String? sourcePath;
+  final int? clipStartMs;
+  final int? clipEndMs;
 
   Moment copyWith({
     String? id,
@@ -39,6 +45,9 @@ class Moment {
     String? title,
     String? note,
     Object? archived = _notProvided,
+    Object? sourcePath = _notProvided,
+    Object? clipStartMs = _notProvided,
+    Object? clipEndMs = _notProvided,
   }) {
     return Moment(
       id: id ?? this.id,
@@ -51,6 +60,15 @@ class Moment {
       archived: identical(archived, _notProvided)
           ? this.archived
           : archived! as bool,
+      sourcePath: identical(sourcePath, _notProvided)
+          ? this.sourcePath
+          : sourcePath as String?,
+      clipStartMs: identical(clipStartMs, _notProvided)
+          ? this.clipStartMs
+          : clipStartMs as int?,
+      clipEndMs: identical(clipEndMs, _notProvided)
+          ? this.clipEndMs
+          : clipEndMs as int?,
     );
   }
 }

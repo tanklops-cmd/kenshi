@@ -12,7 +12,7 @@ class FilePickerMomentMediaPicker implements MomentMediaPicker {
 
   @override
   Future<String?> pick(MomentType type) async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: type == MomentType.photo ? FileType.image : FileType.video,
       allowMultiple: false,
       withData: false,

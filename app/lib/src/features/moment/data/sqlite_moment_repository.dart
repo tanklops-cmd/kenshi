@@ -81,6 +81,9 @@ class SqliteMomentRepository implements MomentRepository {
       'title': moment.title,
       'note': moment.note,
       'archived': moment.archived ? 1 : 0,
+      'source_path': moment.sourcePath,
+      'clip_start_ms': moment.clipStartMs,
+      'clip_end_ms': moment.clipEndMs,
     };
   }
 
@@ -97,6 +100,9 @@ class SqliteMomentRepository implements MomentRepository {
       title: row['title']! as String,
       note: row['note']! as String,
       archived: (row['archived']! as int) == 1,
+      sourcePath: row['source_path'] as String?,
+      clipStartMs: row['clip_start_ms'] as int?,
+      clipEndMs: row['clip_end_ms'] as int?,
     );
   }
 }

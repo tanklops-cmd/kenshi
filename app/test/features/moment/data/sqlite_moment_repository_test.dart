@@ -62,57 +62,87 @@ void main() {
     expect(all.single.archived, isTrue);
   });
 
-  test(
-    'migrates a version 4 database without changing existing Sessions',
-    () async {
-      sqfliteFfiInit();
-      final directory = await Directory.systemTemp.createTemp(
-        'kendo_companion_moment_migration_test_',
-      );
-      final databasePath = path.join(directory.path, 'app.sqlite3');
+  test('migrates version 5 Moments and preserves existing records', () async {
+    sqfliteFfiInit();
+    final directory = await Directory.systemTemp.createTemp(
+      'kendo_companion_moment_migration_test_',
+    );
+    final databasePath = path.join(directory.path, 'app.sqlite3');
 
-      try {
-        final versionFour = await databaseFactoryFfi.openDatabase(databasePath);
-        await versionFour.execute('''
+    try {
+      final versionFour = await databaseFactoryFfi.openDatabase(databasePath);
+      await versionFour.execute('''
         CREATE TABLE sessions (
           id TEXT PRIMARY KEY NOT NULL,
           title TEXT NOT NULL
         )
       ''');
-        await versionFour.insert('sessions', {
-          'id': 'existing-session',
-          'title': 'Existing Session',
-        });
-        await versionFour.setVersion(4);
-        await versionFour.close();
+      await versionFour.insert('sessions', {
+        'id': 'existing-session',
+        'title': 'Existing Session',
+      });
+      await versionFour.execute('''
+          CREATE TABLE moments (
+            id TEXT PRIMARY KEY NOT NULL,
+            session_id TEXT NOT NULL,
+            created_at INTEGER NOT NULL,
+            type TEXT NOT NULL,
+            local_path TEXT NOT NULL,
+            title TEXT NOT NULL DEFAULT '',
+            note TEXT NOT NULL DEFAULT '',
+            archived INTEGER NOT NULL DEFAULT 0
+          )
+        ''');
+      await versionFour.insert('moments', {
+        'id': 'existing-moment',
+        'session_id': 'existing-session',
+        'created_at': DateTime.utc(2026, 7, 1).millisecondsSinceEpoch,
+        'type': 'video',
+        'local_path': r'C:\media\existing.mp4',
+        'title': 'Existing Moment',
+        'note': '',
+        'archived': 0,
+      });
+      await versionFour.setVersion(5);
+      await versionFour.close();
 
-        final migrated = await openAppDatabaseAtPath(
-          databaseFactory: databaseFactoryFfi,
-          databasePath: databasePath,
-        );
-        expect(await migrated.getVersion(), appDatabaseSchemaVersion);
-        final columns = await migrated.rawQuery('PRAGMA table_info(moments)');
-        expect(
-          columns.map((column) => column['name']),
-          containsAll([
-            'id',
-            'session_id',
-            'created_at',
-            'type',
-            'local_path',
-            'title',
-            'note',
-            'archived',
-          ]),
-        );
-        final sessions = await migrated.query('sessions');
-        expect(sessions.single['title'], 'Existing Session');
-        await migrated.close();
-      } finally {
-        await directory.delete(recursive: true);
-      }
-    },
-  );
+      final migrated = await openAppDatabaseAtPath(
+        databaseFactory: databaseFactoryFfi,
+        databasePath: databasePath,
+      );
+      expect(await migrated.getVersion(), appDatabaseSchemaVersion);
+      final columns = await migrated.rawQuery('PRAGMA table_info(moments)');
+      expect(
+        columns.map((column) => column['name']),
+        containsAll([
+          'id',
+          'session_id',
+          'created_at',
+          'type',
+          'local_path',
+          'title',
+          'note',
+          'archived',
+          'source_path',
+          'clip_start_ms',
+          'clip_end_ms',
+        ]),
+      );
+      final sessions = await migrated.query('sessions');
+      expect(sessions.single['title'], 'Existing Session');
+      final existing = await SqliteMomentRepository(
+        migrated,
+      ).read('existing-moment');
+      expect(existing, isNotNull);
+      expect(existing!.localPath, r'C:\media\existing.mp4');
+      expect(existing.sourcePath, isNull);
+      expect(existing.clipStartMs, isNull);
+      expect(existing.clipEndMs, isNull);
+      await migrated.close();
+    } finally {
+      await directory.delete(recursive: true);
+    }
+  });
 }
 
 Session _session() {
@@ -148,4 +178,7 @@ void _expectMoment(Moment actual, Moment expected) {
   expect(actual.title, expected.title);
   expect(actual.note, expected.note);
   expect(actual.archived, expected.archived);
+  expect(actual.sourcePath, expected.sourcePath);
+  expect(actual.clipStartMs, expected.clipStartMs);
+  expect(actual.clipEndMs, expected.clipEndMs);
 }

@@ -120,16 +120,28 @@ class _MomentList extends ConsumerWidget {
     }
 
     try {
-      final moment = await ref
-          .read(momentActionsProvider)
-          .pickAndCreate(sessionId: sessionId, type: type);
-      if (moment != null && context.mounted) {
-        await context.push(
-          AppRoutes.momentDetailLocation(
-            sessionId: sessionId,
-            momentId: moment.id,
-          ),
-        );
+      if (type == MomentType.video) {
+        final sourcePath = await ref
+            .read(momentActionsProvider)
+            .pickMedia(type);
+        if (sourcePath != null && context.mounted) {
+          await context.push(
+            AppRoutes.momentVideoPreviewLocation(sessionId),
+            extra: sourcePath,
+          );
+        }
+      } else {
+        final moment = await ref
+            .read(momentActionsProvider)
+            .pickAndCreate(sessionId: sessionId, type: type);
+        if (moment != null && context.mounted) {
+          await context.push(
+            AppRoutes.momentDetailLocation(
+              sessionId: sessionId,
+              momentId: moment.id,
+            ),
+          );
+        }
       }
     } on Object {
       if (context.mounted) {

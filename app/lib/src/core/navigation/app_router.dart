@@ -7,6 +7,7 @@ import 'package:kendo_companion/src/features/learn/presentation/learn_screen.dar
 import 'package:kendo_companion/src/features/learn/presentation/learn_topic_detail_screen.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_topic_list_screen.dart';
 import 'package:kendo_companion/src/features/moment/presentation/moment_detail_screen.dart';
+import 'package:kendo_companion/src/features/moment/presentation/moment_video_preview_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/new_practice_topic_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_topic_detail_screen.dart';
@@ -76,6 +77,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           return SessionDetailScreen(
             sessionId: state.pathParameters['sessionId']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.momentVideoPreview,
+        builder: (context, state) {
+          return MomentVideoPreviewScreen(
+            sessionId: state.pathParameters['sessionId']!,
+            sourcePath: state.extra! as String,
           );
         },
       ),

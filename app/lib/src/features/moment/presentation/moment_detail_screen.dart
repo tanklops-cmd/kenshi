@@ -7,6 +7,7 @@ import 'package:kendo_companion/src/core/widgets/autosave_text_field.dart';
 import 'package:kendo_companion/src/features/moment/application/moment_providers.dart';
 import 'package:kendo_companion/src/features/moment/domain/moment.dart';
 import 'package:kendo_companion/src/features/moment/presentation/moment_thumbnail.dart';
+import 'package:kendo_companion/src/features/moment/presentation/moment_video_player.dart';
 
 class MomentDetailScreen extends ConsumerWidget {
   const MomentDetailScreen({required this.momentId, super.key});
@@ -69,7 +70,10 @@ class _MomentDetailState extends ConsumerState<_MomentDetail> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        MomentThumbnail(moment: _moment),
+        if (_moment.type == MomentType.video)
+          MomentVideoPlayer(path: _moment.localPath)
+        else
+          MomentThumbnail(moment: _moment),
         const SizedBox(height: 20),
         AutosaveTextField(
           fieldKey: const ValueKey('momentTitleField'),

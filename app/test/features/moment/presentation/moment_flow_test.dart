@@ -4,7 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kendo_companion/src/app/app.dart';
 import 'package:kendo_companion/src/features/moment/application/moment_providers.dart';
 import 'package:kendo_companion/src/features/moment/data/moment_media_services.dart';
+import 'package:kendo_companion/src/features/moment/data/moment_video_controller.dart';
 import 'package:kendo_companion/src/features/moment/domain/moment.dart';
+import 'package:kendo_companion/src/features/moment/domain/moment_clip_exporter.dart';
+import 'package:kendo_companion/src/features/moment/domain/moment_clip_selection.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 
@@ -76,7 +79,15 @@ void main() {
   testWidgets('supports selecting a video Moment', (tester) async {
     final moments = FakeMomentRepository();
     final picker = _FakeMomentMediaPicker(r'C:\media\keiko.mp4');
-    await _pumpSession(tester, moments: moments, picker: picker);
+    final exporter = _FakeMomentClipExporter(r'C:\moments\keiko-clip.mp4');
+    final videoFactory = _FakeMomentVideoControllerFactory();
+    await _pumpSession(
+      tester,
+      moments: moments,
+      picker: picker,
+      exporter: exporter,
+      videoFactory: videoFactory,
+    );
 
     await tester.tap(find.byKey(const ValueKey('addMomentButton')));
     await tester.pumpAndSettle();
@@ -84,11 +95,40 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(picker.lastType, MomentType.video);
-    expect(
-      (await moments.readForSession('session-1')).single.type,
-      MomentType.video,
+    expect(find.text('Choose Moment'), findsOneWidget);
+    final previewScroll = find.byType(Scrollable).last;
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('momentStartSlider')),
+      160,
+      scrollable: previewScroll,
     );
-    expect(find.byIcon(Icons.videocam_outlined), findsWidgets);
+    expect(find.byKey(const ValueKey('momentStartSlider')), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const ValueKey('momentStartSlider')),
+      const Offset(120, 0),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('createMomentClipButton')),
+      180,
+      scrollable: previewScroll,
+    );
+    expect(find.text('7 seconds'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('createMomentClipButton')));
+    await tester.pumpAndSettle();
+
+    final stored = (await moments.readForSession('session-1')).single;
+    expect(stored.type, MomentType.video);
+    expect(stored.localPath, r'C:\moments\keiko-clip.mp4');
+    expect(stored.sourcePath, r'C:\media\keiko.mp4');
+    expect(stored.clipStartMs, isNotNull);
+    expect(stored.clipEndMs! - stored.clipStartMs!, 7000);
+    expect(exporter.selection, isNotNull);
+    expect(find.text('Moment'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('slowPlaybackButton')));
+    await tester.pump();
+    expect(videoFactory.controllers.last.rate, 0.25);
   });
 }
 
@@ -97,6 +137,8 @@ Future<void> _pumpSession(
   required FakeMomentRepository moments,
   required MomentMediaPicker picker,
   MomentFileStore? fileStore,
+  MomentClipExporter? exporter,
+  MomentVideoControllerFactory? videoFactory,
 }) async {
   final sessions = FakeSessionRepository();
   await sessions.create(_summarySession());
@@ -108,6 +150,10 @@ Future<void> _pumpSession(
         momentMediaPickerProvider.overrideWithValue(picker),
         if (fileStore != null)
           momentFileStoreProvider.overrideWithValue(fileStore),
+        if (exporter != null)
+          momentClipExporterProvider.overrideWithValue(exporter),
+        if (videoFactory != null)
+          momentVideoControllerFactoryProvider.overrideWithValue(videoFactory),
       ],
       child: const KendoCompanionApp(),
     ),
@@ -165,5 +211,68 @@ class _FakeMomentFileStore implements MomentFileStore {
   @override
   Future<void> delete(String path) async {
     deletedPaths.add(path);
+  }
+}
+
+class _FakeMomentClipExporter implements MomentClipExporter {
+  _FakeMomentClipExporter(this.outputPath);
+
+  final String outputPath;
+  MomentClipSelection? selection;
+
+  @override
+  Future<String> export(MomentClipSelection selection) async {
+    this.selection = selection;
+    return outputPath;
+  }
+}
+
+class _FakeMomentVideoControllerFactory
+    implements MomentVideoControllerFactory {
+  final List<_FakeMomentVideoController> controllers = [];
+
+  @override
+  MomentVideoController create() {
+    final controller = _FakeMomentVideoController();
+    controllers.add(controller);
+    return controller;
+  }
+}
+
+class _FakeMomentVideoController extends MomentVideoController {
+  @override
+  Duration duration = const Duration(seconds: 30);
+
+  @override
+  Duration position = Duration.zero;
+
+  @override
+  bool playing = false;
+
+  double rate = 1;
+
+  @override
+  Widget buildVideo({bool controls = false}) {
+    return const ColoredBox(color: Colors.black);
+  }
+
+  @override
+  Future<void> open(String path) async {}
+
+  @override
+  Future<void> playOrPause() async {
+    playing = !playing;
+    notifyListeners();
+  }
+
+  @override
+  Future<void> seek(Duration position) async {
+    this.position = position;
+    notifyListeners();
+  }
+
+  @override
+  Future<void> setRate(double rate) async {
+    this.rate = rate;
   }
 }

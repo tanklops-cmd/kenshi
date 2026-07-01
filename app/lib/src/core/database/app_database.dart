@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
 
 const _databaseFileName = 'kendo_companion.sqlite3';
-const appDatabaseSchemaVersion = 5;
+const appDatabaseSchemaVersion = 6;
 
 final appDatabaseProvider = Provider<sqflite.Database>((ref) {
   throw StateError('The application database has not been initialised.');
@@ -156,5 +156,15 @@ Future<void> _migrateDatabase(
       CREATE INDEX index_moments_session
       ON moments (session_id, archived, created_at DESC)
     ''');
+  }
+
+  if (oldVersion < 6 && newVersion >= 6) {
+    await database.execute('ALTER TABLE moments ADD COLUMN source_path TEXT');
+    await database.execute(
+      'ALTER TABLE moments ADD COLUMN clip_start_ms INTEGER',
+    );
+    await database.execute(
+      'ALTER TABLE moments ADD COLUMN clip_end_ms INTEGER',
+    );
   }
 }
