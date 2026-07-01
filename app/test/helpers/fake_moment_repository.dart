@@ -50,4 +50,13 @@ class FakeMomentRepository implements MomentRepository {
     }
     _moments[index] = _moments[index].copyWith(archived: true);
   }
+
+  @override
+  Future<List<Moment>> readRecent(int limit) async {
+    final sorted = _moments
+        .where((moment) => !moment.archived)
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return sorted.take(limit).toList();
+  }
 }

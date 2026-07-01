@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kendo_companion/src/app/app.dart';
+import 'package:kendo_companion/src/features/guidance/application/guidance_providers.dart';
 import 'package:kendo_companion/src/features/moment/application/moment_providers.dart';
 import 'package:kendo_companion/src/features/moment/data/moment_media_services.dart';
 import 'package:kendo_companion/src/features/moment/data/moment_video_controller.dart';
@@ -11,6 +12,7 @@ import 'package:kendo_companion/src/features/moment/domain/moment_clip_selection
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 
+import '../../../helpers/fake_guidance_repository.dart';
 import '../../../helpers/fake_moment_repository.dart';
 import '../../../helpers/fake_session_repository.dart';
 
@@ -146,6 +148,7 @@ Future<void> _pumpSession(
     ProviderScope(
       overrides: [
         sessionRepositoryProvider.overrideWithValue(sessions),
+        guidanceRepositoryProvider.overrideWithValue(FakeGuidanceRepository()),
         momentRepositoryProvider.overrideWithValue(moments),
         momentMediaPickerProvider.overrideWithValue(picker),
         if (fileStore != null)

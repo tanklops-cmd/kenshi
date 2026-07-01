@@ -71,6 +71,18 @@ class SqliteMomentRepository implements MomentRepository {
     }
   }
 
+  @override
+  Future<List<Moment>> readRecent(int limit) async {
+    final rows = await _database.query(
+      _tableName,
+      where: 'archived = ?',
+      whereArgs: [0],
+      orderBy: 'created_at DESC',
+      limit: limit,
+    );
+    return rows.map(_fromMap).toList(growable: false);
+  }
+
   Map<String, Object?> _toMap(Moment moment) {
     return {
       'id': moment.id,

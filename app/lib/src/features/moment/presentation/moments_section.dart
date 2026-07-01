@@ -21,21 +21,37 @@ class MomentsSection extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Moments', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             moments.when(
               data: (items) =>
                   _MomentList(sessionId: sessionId, moments: items),
               error: (error, stackTrace) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Moments could not be loaded.'),
+                  Text(
+                    'Moments could not be loaded.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => ref.invalidate(momentsProvider(sessionId)),
                     child: const Text('Try Again'),
                   ),
                 ],
               ),
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -52,39 +68,69 @@ class _MomentList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (moments.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: Text('No Moments yet.'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Text(
+              'No Moments yet.',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.5,
+              ),
+            ),
           )
         else
-          for (final moment in moments)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(
-                moment.type == MomentType.photo
-                    ? Icons.image_outlined
-                    : Icons.videocam_outlined,
-              ),
-              title: Text(
-                moment.title.trim().isEmpty ? moment.type.label : moment.title,
-              ),
-              subtitle: Text(moment.type.label),
-              trailing: const Icon(Icons.chevron_right),
+          for (final moment in moments) ...[
+            InkWell(
               onTap: () => context.push(
                 AppRoutes.momentDetailLocation(
                   sessionId: sessionId,
                   momentId: moment.id,
                 ),
               ),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      moment.type == MomentType.photo
+                          ? Icons.image_outlined
+                          : Icons.videocam_outlined,
+                      size: 20,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        moment.title.trim().isEmpty
+                            ? moment.type.label
+                            : moment.title,
+                        style: textTheme.bodyMedium,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 18,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+              ),
             ),
+            Divider(height: 1, color: colorScheme.outlineVariant),
+          ],
+        const SizedBox(height: 12),
         FilledButton.tonalIcon(
           key: const ValueKey('addMomentButton'),
           onPressed: () => _showMomentTypePicker(context, ref),
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add, size: 18),
           label: const Text('Add Moment'),
         ),
       ],

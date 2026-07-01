@@ -19,22 +19,42 @@ class PracticeTopicDetailScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Practice Topic')),
       body: topic.when(
         data: (value) => value == null
-            ? const Center(child: Text('Practice topic not found.'))
+            ? Center(
+                child: Text(
+                  'Practice topic not found.',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              )
             : _PracticeTopicWorkspace(topic: value),
         error: (error, stackTrace) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Practice topic could not be loaded.'),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => ref.invalidate(practiceTopicProvider(topicId)),
-                child: const Text('Try Again'),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Practice topic could not be loaded.',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () => ref.invalidate(practiceTopicProvider(topicId)),
+                  child: const Text('Try Again'),
+                ),
+              ],
+            ),
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
     );
   }
@@ -89,18 +109,24 @@ class _PracticeTopicWorkspaceState
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
       children: [
-        Text(_topic.name, style: Theme.of(context).textTheme.headlineMedium),
+        Text(_topic.name, style: textTheme.headlineMedium),
         const SizedBox(height: 4),
         Text(
           _topic.category.label,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: textTheme.labelLarge?.copyWith(
+            color: colorScheme.primary,
+            letterSpacing: 0.8,
+          ),
         ),
-        const SizedBox(height: 24),
-        Text('Current State', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        const SizedBox(height: 28),
+        Text('Current State', style: textTheme.titleLarge),
+        const SizedBox(height: 10),
         AutosaveTextField(
           fieldKey: const ValueKey('practiceCurrentStateField'),
           initialValue: _topic.currentState,
@@ -109,9 +135,9 @@ class _PracticeTopicWorkspaceState
             (current) => current.copyWith(currentState: edit.value),
           ),
         ),
-        const SizedBox(height: 24),
-        Text('Mental Cues', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        const SizedBox(height: 28),
+        Text('Mental Cues', style: textTheme.titleLarge),
+        const SizedBox(height: 10),
         AutosaveTextField(
           fieldKey: const ValueKey('practiceMentalCuesField'),
           initialValue: _topic.mentalCues,

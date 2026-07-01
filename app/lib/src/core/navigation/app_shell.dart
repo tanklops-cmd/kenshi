@@ -15,36 +15,47 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _selectDestination,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.today_outlined),
-            selectedIcon: Icon(Icons.today),
-            label: 'Today',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Divider(
+            height: 1,
+            thickness: 0.5,
+            color: colorScheme.outlineVariant,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.edit_note_outlined),
-            selectedIcon: Icon(Icons.edit_note),
-            label: 'Reflect',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.fitness_center_outlined),
-            selectedIcon: Icon(Icons.fitness_center),
-            label: 'Practice',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Learn',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.self_improvement_outlined),
-            selectedIcon: Icon(Icons.self_improvement),
-            label: 'Prepare',
+          NavigationBar(
+            selectedIndex: navigationShell.currentIndex,
+            onDestinationSelected: _selectDestination,
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.today_outlined),
+                selectedIcon: Icon(Icons.today),
+                label: 'Today',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.history_edu_outlined),
+                selectedIcon: Icon(Icons.history_edu),
+                label: 'Reflect',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.fitness_center_outlined),
+                selectedIcon: Icon(Icons.fitness_center),
+                label: 'Practice',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.auto_stories_outlined),
+                selectedIcon: Icon(Icons.auto_stories),
+                label: 'Learn',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.explore_outlined),
+                selectedIcon: Icon(Icons.explore),
+                label: 'Prepare',
+              ),
+            ],
           ),
         ],
       ),

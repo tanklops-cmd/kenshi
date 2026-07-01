@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kendo_companion/src/core/navigation/app_routes.dart';
 import 'package:kendo_companion/src/core/navigation/app_shell.dart';
+import 'package:kendo_companion/src/features/guidance/presentation/guidance_detail_screen.dart';
 import 'package:kendo_companion/src/features/learn/domain/learn_topic.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_screen.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_topic_detail_screen.dart';
@@ -71,66 +73,100 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.search,
-        builder: (context, state) => const SearchScreen(),
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: const SearchScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.newSession,
-        builder: (context, state) => const NewSessionScreen(),
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: const NewSessionScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.sessionDetail,
-        builder: (context, state) {
-          return SessionDetailScreen(
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: SessionDetailScreen(
             sessionId: state.pathParameters['sessionId']!,
-          );
-        },
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.newGuidance,
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: GuidanceDetailScreen(
+            sessionId: state.pathParameters['sessionId']!,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.guidanceDetail,
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: GuidanceDetailScreen(
+            sessionId: state.pathParameters['sessionId']!,
+            guidanceId: state.pathParameters['guidanceId']!,
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.momentVideoPreview,
-        builder: (context, state) {
-          return MomentVideoPreviewScreen(
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: MomentVideoPreviewScreen(
             sessionId: state.pathParameters['sessionId']!,
             sourcePath: state.extra! as String,
-          );
-        },
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.momentDetail,
-        builder: (context, state) {
-          return MomentDetailScreen(
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: MomentDetailScreen(
             momentId: state.pathParameters['momentId']!,
-          );
-        },
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.newPracticeTopic,
-        builder: (context, state) => const NewPracticeTopicScreen(),
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: const NewPracticeTopicScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.practiceTopicDetail,
-        builder: (context, state) {
-          return PracticeTopicDetailScreen(
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: PracticeTopicDetailScreen(
             topicId: state.pathParameters['topicId']!,
-          );
-        },
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.learnCategory,
-        builder: (context, state) {
-          return LearnTopicListScreen(
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: LearnTopicListScreen(
             category: LearnCategory.values.byName(
               state.pathParameters['category']!,
             ),
-          );
-        },
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.learnTopicDetail,
-        builder: (context, state) {
-          return LearnTopicDetailScreen(
+        pageBuilder: (context, state) => _fadeSlide(
+          state: state,
+          child: LearnTopicDetailScreen(
             topicId: state.pathParameters['topicId']!,
-          );
-        },
+          ),
+        ),
       ),
     ],
   );
@@ -138,3 +174,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(router.dispose);
   return router;
 });
+
+CustomTransitionPage<void> _fadeSlide({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 240),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fade = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOut,
+        reverseCurve: Curves.easeIn,
+      );
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.04),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(position: slide, child: child),
+      );
+    },
+  );
+}

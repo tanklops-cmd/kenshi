@@ -23,7 +23,12 @@ class PracticeScreen extends ConsumerWidget {
         error: (error, stackTrace) => _PracticeTopicListError(
           onRetry: () => ref.invalidate(practiceTopicsProvider),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(AppRoutes.newPracticeTopic),
@@ -42,38 +47,98 @@ class _PracticeTopicList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (topics.isEmpty) {
-      return const Center(child: Text('No practice topics yet.'));
+      return _EmptyState();
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       itemCount: topics.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final topic = topics[index];
         final firstLine = topic.currentState.split(RegExp(r'\r?\n')).first;
+        final preview = firstLine.trim().isEmpty ? null : firstLine.trim();
 
         return Card(
-          child: ListTile(
-            onTap: () =>
-                context.push(AppRoutes.practiceTopicDetailLocation(topic.id)),
-            title: Text(topic.name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(topic.category.label),
-                Text(
-                  firstLine.trim().isEmpty
-                      ? 'Current state not set'
-                      : firstLine,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+          child: InkWell(
+            onTap: () => context
+                .push(AppRoutes.practiceTopicDetailLocation(topic.id)),
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          topic.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          topic.category.label,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        if (preview != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            preview,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, size: 18),
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.fitness_center_outlined,
+              size: 40,
+              color: colorScheme.primary.withAlpha(180),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No practice topics yet.',
+              style: textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Add the things you are currently working on — your footwork, your swing, your spirit.',
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.6,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -85,14 +150,23 @@ class _PracticeTopicListError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('Practice topics could not be loaded.'),
-          const SizedBox(height: 12),
-          OutlinedButton(onPressed: onRetry, child: const Text('Try Again')),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Practice topics could not be loaded.',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(onPressed: onRetry, child: const Text('Try Again')),
+          ],
+        ),
       ),
     );
   }

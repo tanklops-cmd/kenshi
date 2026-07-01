@@ -10,6 +10,8 @@ abstract interface class MomentRepository {
     bool includeArchived = false,
   });
 
+  Future<List<Moment>> readRecent(int limit);
+
   Future<void> update(Moment moment);
 
   Future<void> archive(String id);

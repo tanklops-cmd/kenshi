@@ -70,15 +70,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               key: const ValueKey('searchField'),
               autofocus: true,
               textInputAction: TextInputAction.search,
-              decoration: const InputDecoration(
-                hintText: 'Search your kendo learning',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: 'Search sessions, practice, learn…',
+                prefixIcon: const Icon(Icons.search, size: 20),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onChanged: _queryChanged,
             ),
@@ -94,10 +96,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       return const SizedBox.shrink();
     }
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      );
     }
     if (_results.isEmpty) {
-      return const Center(child: Text('No results found.'));
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            'Nothing found for "$_query".',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     }
 
     final groups = SearchResultType.values
@@ -130,39 +148,68 @@ class _ResultGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
+          padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
           child: Text(
             type.groupLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: textTheme.labelLarge?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              letterSpacing: 0.8,
+            ),
           ),
         ),
         for (final result in results)
           Card(
-            child: ListTile(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: InkWell(
               onTap: () => _openResult(context, result),
-              title: Text(result.title),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(result.typeLabel),
-                  Text(
-                    result.preview,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              trailing: result.date == null
-                  ? const Icon(Icons.chevron_right)
-                  : Text(
-                      MaterialLocalizations.of(
-                        context,
-                      ).formatMediumDate(result.date!.toLocal()),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            result.title,
+                            style: textTheme.titleMedium,
+                          ),
+                        ),
+                        if (result.date != null)
+                          Text(
+                            MaterialLocalizations.of(context)
+                                .formatMediumDate(result.date!.toLocal()),
+                            style: textTheme.labelMedium,
+                          )
+                        else
+                          Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                      ],
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      result.preview,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
       ],

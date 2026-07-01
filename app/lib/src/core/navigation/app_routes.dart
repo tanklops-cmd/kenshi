@@ -6,6 +6,9 @@ abstract final class AppRoutes {
   static const momentDetail = '/reflect/sessions/:sessionId/moments/:momentId';
   static const momentVideoPreview =
       '/reflect/sessions/:sessionId/moments/new-video';
+  static const newGuidance = '/reflect/sessions/:sessionId/guidance/new';
+  static const guidanceDetail =
+      '/reflect/sessions/:sessionId/guidance/:guidanceId';
   static const practice = '/practice';
   static const newPracticeTopic = '/practice/new-topic';
   static const practiceTopicDetail = '/practice/topics/:topicId';
@@ -30,6 +33,18 @@ abstract final class AppRoutes {
   static String momentVideoPreviewLocation(String sessionId) {
     return '/reflect/sessions/${Uri.encodeComponent(sessionId)}'
         '/moments/new-video';
+  }
+
+  static String newGuidanceLocation(String sessionId) {
+    return '/reflect/sessions/${Uri.encodeComponent(sessionId)}/guidance/new';
+  }
+
+  static String guidanceDetailLocation({
+    required String sessionId,
+    required String guidanceId,
+  }) {
+    return '/reflect/sessions/${Uri.encodeComponent(sessionId)}'
+        '/guidance/${Uri.encodeComponent(guidanceId)}';
   }
 
   static String practiceTopicDetailLocation(String topicId) {

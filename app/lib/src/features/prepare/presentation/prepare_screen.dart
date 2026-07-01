@@ -18,7 +18,12 @@ class PrepareScreen extends ConsumerWidget {
         data: (items) => _PrepareContent(sessions: items),
         error: (error, stackTrace) =>
             _PrepareError(onRetry: () => ref.invalidate(sessionsProvider)),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
     );
   }
@@ -39,22 +44,38 @@ class _PrepareContent extends StatelessWidget {
 
     return ListView(
       key: const ValueKey('prepareList'),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
       children: [
         _SectionHeading(title: 'Current Focus'),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         _CurrentFocusCard(session: currentFocusSession),
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
         _SectionHeading(title: 'Last Session'),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         _LastSessionCard(session: lastSession),
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
         _SectionHeading(title: 'Upcoming Session'),
-        const SizedBox(height: 8),
-        const Card(
-          child: ListTile(
-            leading: Icon(Icons.event_outlined),
-            title: Text('Coming Soon'),
+        const SizedBox(height: 10),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.event_outlined,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Coming Soon',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color:
+                            Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -70,6 +91,9 @@ class _CurrentFocusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final source = session;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final hasFocus = source != null;
 
     return Card(
       child: Padding(
@@ -78,10 +102,16 @@ class _CurrentFocusCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              source?.nextFocus?.trim() ?? 'No current focus.',
-              style: Theme.of(context).textTheme.titleMedium,
+              hasFocus
+                  ? source.nextFocus!.trim()
+                  : 'No current focus.',
+              style: hasFocus
+                  ? textTheme.titleMedium
+                  : textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             FilledButton.tonal(
               key: const ValueKey('openFocusSessionButton'),
               onPressed: source == null
@@ -106,12 +136,29 @@ class _LastSessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final source = session;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (source == null) {
-      return const Card(
-        child: ListTile(
-          leading: Icon(Icons.history),
-          title: Text('No previous session.'),
-          subtitle: Text('No review available.'),
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'No previous session.',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'No review available.',
+                style: textTheme.bodySmall,
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -122,25 +169,44 @@ class _LastSessionCard extends StatelessWidget {
     ).formatMediumDate(source.trainingDate);
 
     return Card(
-      child: ListTile(
+      child: InkWell(
         key: const ValueKey('lastSessionCard'),
-        onTap: () => context.push(AppRoutes.sessionDetailLocation(source.id)),
-        leading: const Icon(Icons.history),
-        title: Text(source.title),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(date),
-            const SizedBox(height: 8),
-            Text(
-              notes ?? 'No review available.',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        onTap: () =>
+            context.push(AppRoutes.sessionDetailLocation(source.id)),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(source.title, style: textTheme.titleMedium),
+                  ),
+                  const Icon(Icons.chevron_right, size: 18),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                date,
+                style: textTheme.bodySmall,
+              ),
+              if (notes != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  notes,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
-        trailing: const Icon(Icons.chevron_right),
       ),
     );
   }
@@ -153,7 +219,14 @@ class _SectionHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: Theme.of(context).textTheme.titleLarge);
+    final colorScheme = Theme.of(context).colorScheme;
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            letterSpacing: 0.8,
+          ),
+    );
   }
 }
 
@@ -164,14 +237,20 @@ class _PrepareError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Preparation could not be loaded.'),
-            const SizedBox(height: 12),
+            Text(
+              'Preparation could not be loaded.',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 16),
             OutlinedButton(onPressed: onRetry, child: const Text('Try Again')),
           ],
         ),
@@ -191,3 +270,4 @@ String? _summaryNotes(Session session) {
 }
 
 bool _hasText(String? value) => value != null && value.trim().isNotEmpty;
+

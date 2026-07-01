@@ -86,7 +86,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
             children: [
               FormField<DateTime>(
                 key: const ValueKey('trainingDateField'),

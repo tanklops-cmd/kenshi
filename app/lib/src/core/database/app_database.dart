@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
 
 const _databaseFileName = 'kendo_companion.sqlite3';
-const appDatabaseSchemaVersion = 6;
+const appDatabaseSchemaVersion = 7;
 
 final appDatabaseProvider = Provider<sqflite.Database>((ref) {
   throw StateError('The application database has not been initialised.');
@@ -166,5 +166,24 @@ Future<void> _migrateDatabase(
     await database.execute(
       'ALTER TABLE moments ADD COLUMN clip_end_ms INTEGER',
     );
+  }
+
+  if (oldVersion < 7 && newVersion >= 7) {
+    await database.execute('''
+      CREATE TABLE guidance_entries (
+        id TEXT PRIMARY KEY NOT NULL,
+        session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        coach_name TEXT,
+        advice TEXT NOT NULL CHECK (length(trim(advice)) > 0),
+        context TEXT,
+        archived INTEGER NOT NULL DEFAULT 0 CHECK (archived IN (0, 1))
+      )
+    ''');
+    await database.execute('''
+      CREATE INDEX index_guidance_entries_session
+      ON guidance_entries (session_id, archived, created_at DESC)
+    ''');
   }
 }

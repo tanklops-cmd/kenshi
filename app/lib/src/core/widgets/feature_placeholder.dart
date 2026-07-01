@@ -14,23 +14,35 @@ class FeaturePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return SafeArea(
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 48),
-              const SizedBox(height: 20),
-              Text(title, style: textTheme.headlineMedium),
-              const SizedBox(height: 8),
+              Icon(
+                icon,
+                size: 40,
+                color: colorScheme.primary.withAlpha(180),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
               Text(
                 prompt,
                 textAlign: TextAlign.center,
-                style: textTheme.bodyLarge,
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  height: 1.6,
+                ),
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kendo_companion/src/core/widgets/autosave_text_field.dart';
+import 'package:kendo_companion/src/features/guidance/presentation/guidance_section.dart';
 import 'package:kendo_companion/src/features/moment/presentation/moments_section.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
@@ -21,7 +22,14 @@ class SessionDetailScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Session')),
       body: session.when(
         data: (value) => value == null
-            ? const Center(child: Text('Session not found.'))
+            ? Center(
+                child: Text(
+                  'Session not found.',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              )
             : _SessionWorkspace(session: value),
         error: (error, stackTrace) => Center(
           child: Padding(
@@ -29,8 +37,13 @@ class SessionDetailScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Session could not be loaded.'),
-                const SizedBox(height: 12),
+                Text(
+                  'Session could not be loaded.',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 16),
                 OutlinedButton(
                   onPressed: () => ref.invalidate(sessionProvider(sessionId)),
                   child: const Text('Try Again'),
@@ -39,7 +52,12 @@ class SessionDetailScreen extends ConsumerWidget {
             ),
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
     );
   }
@@ -102,10 +120,10 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
 
     return ListView(
       key: const ValueKey('sessionWorkspaceList'),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
       children: [
         Text(_session.title, style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         _DetailRow(
           icon: Icons.calendar_today,
           label: 'Training Date',
@@ -147,7 +165,7 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
           _CompletedNotesCard(
             cardKey: const ValueKey('freshNotesCompletedCard'),
             title: "What's on your mind?",
-            value: _session.freshNotes ?? 'No original thoughts captured.',
+            value: _session.freshNotes ?? 'Nothing captured yet.',
           ),
           const SizedBox(height: 12),
           _ReviewNotesSection(
@@ -161,6 +179,8 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          GuidanceSection(sessionId: _session.id),
           if (stage.index >= _SessionStage.nextFocus.index) ...[
             const SizedBox(height: 12),
             _NextFocusSection(
@@ -176,8 +196,6 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
           ],
           if (stage == _SessionStage.summary) ...[
             const SizedBox(height: 12),
-            const _ComingSoonSection(title: 'Guidance'),
-            const SizedBox(height: 8),
             MomentsSection(sessionId: _session.id),
           ],
         ],
@@ -305,7 +323,9 @@ class _ReviewNotesSectionState extends State<_ReviewNotesSection> {
         child: ListTile(
           key: const ValueKey('reviewNotesSection'),
           title: const Text('Take another look'),
-          subtitle: Text(widget.initialValue ?? 'Not started'),
+          subtitle: Text(
+            widget.initialValue ?? 'Tap to begin your deeper review',
+          ),
           onTap: () {
             FocusScope.of(context).unfocus();
             setState(() => _isOpen = true);
@@ -358,7 +378,9 @@ class _NextFocusSectionState extends State<_NextFocusSection> {
         child: ListTile(
           key: const ValueKey('nextFocusSection'),
           title: const Text('Next Focus'),
-          subtitle: Text(widget.initialValue ?? 'Not set'),
+          subtitle: Text(
+            widget.initialValue ?? 'What will you bring to the next keiko?',
+          ),
           onTap: () {
             FocusScope.of(context).unfocus();
             setState(() => _isEditing = true);
@@ -390,19 +412,6 @@ class _NextFocusSectionState extends State<_NextFocusSection> {
   }
 }
 
-class _ComingSoonSection extends StatelessWidget {
-  const _ComingSoonSection({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(title: Text(title), subtitle: const Text('Coming Soon')),
-    );
-  }
-}
-
 class _CompletedNotesCard extends StatelessWidget {
   const _CompletedNotesCard({
     required this.cardKey,
@@ -416,6 +425,9 @@ class _CompletedNotesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       key: cardKey,
       child: Padding(
@@ -423,9 +435,18 @@ class _CompletedNotesCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(value),
+            Text(
+              title,
+              style: textTheme.titleLarge,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              value,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.6,
+              ),
+            ),
           ],
         ),
       ),
@@ -472,11 +493,31 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon),
-      title: Text(label),
-      subtitle: Text(value),
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: colorScheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: textTheme.bodyMedium,
+              textAlign: TextAlign.end,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

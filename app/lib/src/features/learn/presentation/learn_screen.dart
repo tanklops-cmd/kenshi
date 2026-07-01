@@ -19,18 +19,32 @@ class LearnScreen extends ConsumerWidget {
       ),
       body: ListView.separated(
         key: const ValueKey('learnCategoryList'),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         itemCount: categories.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 8),
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final category = categories[index];
 
           return Card(
-            child: ListTile(
+            child: InkWell(
               onTap: () =>
                   context.push(AppRoutes.learnCategoryLocation(category.name)),
-              title: Text(category.label),
-              trailing: const Icon(Icons.chevron_right),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        category.label,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, size: 18),
+                  ],
+                ),
+              ),
             ),
           );
         },

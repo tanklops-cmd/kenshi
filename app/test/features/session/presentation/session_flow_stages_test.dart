@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kendo_companion/src/app/app.dart';
+import 'package:kendo_companion/src/features/guidance/application/guidance_providers.dart';
 import 'package:kendo_companion/src/features/moment/application/moment_providers.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 
+import '../../../helpers/fake_guidance_repository.dart';
 import '../../../helpers/fake_moment_repository.dart';
 import '../../../helpers/fake_session_repository.dart';
 
@@ -33,6 +35,9 @@ void main() {
     expect(find.text('Immediate thoughts.'), findsOneWidget);
     expect(find.text('Take another look'), findsOneWidget);
     expect(find.text('Next Focus'), findsNothing);
+    await _scrollTo(tester, find.text('Guidance'));
+    expect(find.text('Guidance'), findsOneWidget);
+    expect(find.text('Add Guidance'), findsOneWidget);
   });
 
   testWidgets('Session with Review Notes offers Next Focus', (tester) async {
@@ -46,8 +51,13 @@ void main() {
 
     expect(find.text('Immediate thoughts.'), findsOneWidget);
     expect(find.text('Later understanding.'), findsOneWidget);
+    await _scrollTo(tester, find.text('Next Focus'));
+    expect(find.text('Guidance'), findsOneWidget);
     expect(find.text('Next Focus'), findsOneWidget);
-    expect(find.text('Guidance'), findsNothing);
+    expect(
+      tester.getTopLeft(find.text('Guidance')).dy,
+      lessThan(tester.getTopLeft(find.text('Next Focus')).dy),
+    );
     expect(find.text('Moments'), findsNothing);
   });
 
@@ -63,22 +73,12 @@ void main() {
 
     expect(find.text("What's on your mind?"), findsOneWidget);
     expect(find.text('Take another look'), findsOneWidget);
+    await _scrollTo(tester, find.text('Next Focus'));
     expect(find.text('Next Focus'), findsOneWidget);
     expect(find.text('Win centre before attacking.'), findsOneWidget);
     expect(find.text('Guidance'), findsOneWidget);
-    final workspaceScroll = find
-        .descendant(
-          of: find.byKey(const ValueKey('sessionWorkspaceList')),
-          matching: find.byType(Scrollable),
-        )
-        .first;
-    await tester.scrollUntilVisible(
-      find.text('Moments'),
-      160,
-      scrollable: workspaceScroll,
-    );
+    await _scrollTo(tester, find.text('Moments'));
     expect(find.text('Moments'), findsOneWidget);
-    expect(find.text('Coming Soon'), findsOneWidget);
     expect(find.text('No Moments yet.'), findsOneWidget);
     expect(find.text('Add Moment'), findsOneWidget);
   });
@@ -91,6 +91,7 @@ Future<void> _pumpSession(WidgetTester tester, Session session) async {
     ProviderScope(
       overrides: [
         sessionRepositoryProvider.overrideWithValue(repository),
+        guidanceRepositoryProvider.overrideWithValue(FakeGuidanceRepository()),
         momentRepositoryProvider.overrideWithValue(FakeMomentRepository()),
       ],
       child: const KendoCompanionApp(),
@@ -101,6 +102,16 @@ Future<void> _pumpSession(WidgetTester tester, Session session) async {
   await tester.pumpAndSettle();
   await tester.tap(find.text(session.title));
   await tester.pumpAndSettle();
+}
+
+Future<void> _scrollTo(WidgetTester tester, Finder target) async {
+  final workspaceScroll = find
+      .descendant(
+        of: find.byKey(const ValueKey('sessionWorkspaceList')),
+        matching: find.byType(Scrollable),
+      )
+      .first;
+  await tester.scrollUntilVisible(target, 160, scrollable: workspaceScroll);
 }
 
 Session _session({String? freshNotes, String? reviewNotes, String? nextFocus}) {
