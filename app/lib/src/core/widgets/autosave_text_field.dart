@@ -23,6 +23,7 @@ class AutosaveTextField extends StatefulWidget {
     this.autofocus = false,
     this.readOnly = false,
     this.singleLine = false,
+    this.dismissOnTapOutside = false,
     this.onFocusLost,
     this.autosaveDelay = const Duration(milliseconds: 600),
     super.key,
@@ -35,6 +36,7 @@ class AutosaveTextField extends StatefulWidget {
   final bool autofocus;
   final bool readOnly;
   final bool singleLine;
+  final bool dismissOnTapOutside;
   final ValueChanged<String>? onFocusLost;
   final Duration autosaveDelay;
 
@@ -203,6 +205,9 @@ class _AutosaveTextFieldState extends State<AutosaveTextField> {
             border: const OutlineInputBorder(),
             filled: widget.readOnly,
           ),
+          onTapOutside: widget.dismissOnTapOutside
+              ? (event) => _focusNode.unfocus()
+              : null,
           onChanged: widget.readOnly ? null : _handleChanged,
         ),
         if (_isSaving || _hasSaved || _saveFailed) ...[

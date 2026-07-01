@@ -97,6 +97,7 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
   @override
   Widget build(BuildContext context) {
     final localizations = MaterialLocalizations.of(context);
+    final stage = _SessionStage.from(_session);
 
     return ListView(
       key: const ValueKey('sessionWorkspaceList'),
@@ -121,53 +122,64 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
             value: location,
           ),
         const SizedBox(height: 24),
-        _FreshNotesSection(
-          initialValue: _session.freshNotes,
-          shouldRecordCompletion:
-              _session.firstCaptureStartedAt != null &&
-              _session.firstCaptureCompletedAt == null,
-          onSave: (edit) => _queueUpdate(
-            (current) => SessionReviewUpdates.freshNotesChanged(
-              current,
-              freshNotes: _capturedText(edit.value),
-              startedAt: edit.startedAt,
+        if (stage == _SessionStage.freshCapture)
+          _FreshNotesSection(
+            initialValue: _session.freshNotes,
+            shouldRecordCompletion:
+                _session.firstCaptureStartedAt != null &&
+                _session.firstCaptureCompletedAt == null,
+            onSave: (edit) => _queueUpdate(
+              (current) => SessionReviewUpdates.freshNotesChanged(
+                current,
+                freshNotes: _capturedText(edit.value),
+                startedAt: edit.startedAt,
+              ),
+            ),
+            onCompleted: (completedAt) => _queueUpdate(
+              (current) => SessionReviewUpdates.freshNotesCompleted(
+                current,
+                completedAt: completedAt,
+              ),
+            ),
+          )
+        else ...[
+          _CompletedNotesCard(
+            cardKey: const ValueKey('freshNotesCompletedCard'),
+            title: "What's on your mind?",
+            value: _session.freshNotes ?? 'No original thoughts captured.',
+          ),
+          const SizedBox(height: 12),
+          _ReviewNotesSection(
+            initialValue: _session.reviewNotes,
+            onSave: (edit) => _queueUpdate(
+              (current) => SessionReviewUpdates.reviewNotesChanged(
+                current,
+                reviewNotes: _capturedText(edit.value),
+                startedAt: edit.startedAt,
+                lastEditedAt: edit.lastEditedAt,
+              ),
             ),
           ),
-          onCompleted: (completedAt) => _queueUpdate(
-            (current) => SessionReviewUpdates.freshNotesCompleted(
-              current,
-              completedAt: completedAt,
+          if (stage.index >= _SessionStage.nextFocus.index) ...[
+            const SizedBox(height: 12),
+            _NextFocusSection(
+              initialValue: _session.nextFocus,
+              onSave: (edit) => _queueUpdate(
+                (current) => SessionReviewUpdates.nextFocusChanged(
+                  current,
+                  nextFocus: _optionalText(edit.value),
+                  createdAt: edit.lastEditedAt,
+                ),
+              ),
             ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        _ReviewNotesSection(
-          freshNotes: _session.freshNotes,
-          initialValue: _session.reviewNotes,
-          onSave: (edit) => _queueUpdate(
-            (current) => SessionReviewUpdates.reviewNotesChanged(
-              current,
-              reviewNotes: _capturedText(edit.value),
-              startedAt: edit.startedAt,
-              lastEditedAt: edit.lastEditedAt,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        _NextFocusSection(
-          initialValue: _session.nextFocus,
-          onSave: (edit) => _queueUpdate(
-            (current) => SessionReviewUpdates.nextFocusChanged(
-              current,
-              nextFocus: _optionalText(edit.value),
-              createdAt: edit.lastEditedAt,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        const _ComingSoonSection(title: 'Guidance'),
-        const SizedBox(height: 8),
-        const _ComingSoonSection(title: 'Moments'),
+          ],
+          if (stage == _SessionStage.summary) ...[
+            const SizedBox(height: 12),
+            const _ComingSoonSection(title: 'Guidance'),
+            const SizedBox(height: 8),
+            const _ComingSoonSection(title: 'Moments'),
+          ],
+        ],
       ],
     );
   }
@@ -258,6 +270,7 @@ class _FreshNotesSectionState extends State<_FreshNotesSection> {
               initialValue: widget.initialValue ?? '',
               autofocus: !_isReadOnly,
               readOnly: _isReadOnly,
+              dismissOnTapOutside: true,
               hintText: "What stood out from today's training?",
               onSave: widget.onSave,
               onFocusLost: (value) {
@@ -272,13 +285,8 @@ class _FreshNotesSectionState extends State<_FreshNotesSection> {
 }
 
 class _ReviewNotesSection extends StatefulWidget {
-  const _ReviewNotesSection({
-    required this.freshNotes,
-    required this.initialValue,
-    required this.onSave,
-  });
+  const _ReviewNotesSection({required this.initialValue, required this.onSave});
 
-  final String? freshNotes;
   final String? initialValue;
   final Future<void> Function(AutosaveEdit edit) onSave;
 
@@ -305,8 +313,6 @@ class _ReviewNotesSectionState extends State<_ReviewNotesSection> {
       );
     }
 
-    final originalNotes = widget.freshNotes;
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -318,14 +324,6 @@ class _ReviewNotesSectionState extends State<_ReviewNotesSection> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
-            Text('Original', style: Theme.of(context).textTheme.labelLarge),
-            const SizedBox(height: 4),
-            Text(
-              originalNotes == null || originalNotes.isEmpty
-                  ? 'No original thoughts captured.'
-                  : originalNotes,
-            ),
-            const SizedBox(height: 16),
             AutosaveTextField(
               fieldKey: const ValueKey('reviewNotesField'),
               initialValue: widget.initialValue ?? '',
@@ -403,6 +401,62 @@ class _ComingSoonSection extends StatelessWidget {
     );
   }
 }
+
+class _CompletedNotesCard extends StatelessWidget {
+  const _CompletedNotesCard({
+    required this.cardKey,
+    required this.title,
+    required this.value,
+  });
+
+  final Key cardKey;
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      key: cardKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text(value),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _SessionStage {
+  freshCapture,
+  review,
+  nextFocus,
+  summary;
+
+  factory _SessionStage.from(Session session) {
+    if (_hasText(session.nextFocus)) {
+      return summary;
+    }
+    if (_hasText(session.reviewNotes)) {
+      return nextFocus;
+    }
+    if (_hasText(session.freshNotes)) {
+      if (session.firstCaptureStartedAt != null &&
+          session.firstCaptureCompletedAt == null) {
+        return freshCapture;
+      }
+      return review;
+    }
+    return freshCapture;
+  }
+}
+
+bool _hasText(String? value) => value != null && value.trim().isNotEmpty;
 
 class _DetailRow extends StatelessWidget {
   const _DetailRow({

@@ -59,28 +59,14 @@ void main() {
     expect(find.text('Club Keiko'), findsOneWidget);
     expect(find.text('Central Dojo'), findsOneWidget);
     expect(find.text("What's on your mind?"), findsOneWidget);
-    final workspaceScroll = find
-        .descendant(
-          of: find.byKey(const ValueKey('sessionWorkspaceList')),
-          matching: find.byType(Scrollable),
-        )
-        .first;
     for (final section in [
       'Take another look',
       'Next Focus',
       'Guidance',
       'Moments',
     ]) {
-      await tester.scrollUntilVisible(
-        find.text(section),
-        120,
-        scrollable: workspaceScroll,
-      );
-      expect(find.text(section), findsOneWidget);
+      expect(find.text(section), findsNothing);
     }
-    expect(find.text('Not started'), findsOneWidget);
-    expect(find.text('Not set'), findsOneWidget);
-    expect(find.text('Coming Soon'), findsNWidgets(2));
 
     final sessions = await repository.readAll();
     expect(sessions, hasLength(1));

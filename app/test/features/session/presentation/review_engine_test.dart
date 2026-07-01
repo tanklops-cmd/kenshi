@@ -34,6 +34,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     expect((await repository.read('session-1'))!.freshNotes, isNull);
 
+    await tester.tap(find.text('Training Date'));
+    await tester.pumpAndSettle();
+
     final workspaceScroll = find
         .descendant(
           of: find.byKey(const ValueKey('sessionWorkspaceList')),
@@ -48,7 +51,6 @@ void main() {
     );
     await tester.tap(reviewSection);
     await tester.pumpAndSettle();
-    expect(find.text('Saved just now'), findsOneWidget);
     expect(
       (await repository.read('session-1'))!.freshNotes,
       'My timing felt late.',
@@ -62,8 +64,11 @@ void main() {
       ),
       isFalse,
     );
-    expect(tester.widget<TextField>(freshNotesField).readOnly, isTrue);
-    expect(find.text('Original'), findsOneWidget);
+    expect(freshNotesField, findsNothing);
+    expect(
+      find.byKey(const ValueKey('freshNotesCompletedCard')),
+      findsOneWidget,
+    );
     expect(find.text('My timing felt late.'), findsWidgets);
 
     final reviewNotesField = find.byKey(const ValueKey('reviewNotesField'));
@@ -135,11 +140,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Tuesday keiko'));
     await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('freshNotesField')), findsNothing);
     expect(
-      tester
-          .widget<TextField>(find.byKey(const ValueKey('freshNotesField')))
-          .readOnly,
-      isTrue,
+      find.byKey(const ValueKey('freshNotesCompletedCard')),
+      findsOneWidget,
     );
     final reopened = (await repository.read('session-1'))!;
     expect(
