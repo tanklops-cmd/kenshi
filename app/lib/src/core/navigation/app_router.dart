@@ -6,6 +6,7 @@ import 'package:kendo_companion/src/features/learn/domain/learn_topic.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_screen.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_topic_detail_screen.dart';
 import 'package:kendo_companion/src/features/learn/presentation/learn_topic_list_screen.dart';
+import 'package:kendo_companion/src/features/moment/presentation/moment_detail_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/new_practice_topic_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_screen.dart';
 import 'package:kendo_companion/src/features/practice/presentation/practice_topic_detail_screen.dart';
@@ -75,6 +76,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           return SessionDetailScreen(
             sessionId: state.pathParameters['sessionId']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.momentDetail,
+        builder: (context, state) {
+          return MomentDetailScreen(
+            momentId: state.pathParameters['momentId']!,
           );
         },
       ),

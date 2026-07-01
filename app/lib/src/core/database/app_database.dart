@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
 
 const _databaseFileName = 'kendo_companion.sqlite3';
-const appDatabaseSchemaVersion = 4;
+const appDatabaseSchemaVersion = 5;
 
 final appDatabaseProvider = Provider<sqflite.Database>((ref) {
   throw StateError('The application database has not been initialised.');
@@ -39,6 +39,7 @@ Future<sqflite.Database> openAppDatabaseAtPath({
     databasePath,
     options: sqflite.OpenDatabaseOptions(
       version: appDatabaseSchemaVersion,
+      onConfigure: (database) => database.execute('PRAGMA foreign_keys = ON'),
       onCreate: (database, version) =>
           _migrateDatabase(database, oldVersion: 0, newVersion: version),
       onUpgrade: (database, oldVersion, newVersion) => _migrateDatabase(
@@ -135,6 +136,25 @@ Future<void> _migrateDatabase(
     await database.execute('''
       CREATE INDEX index_practice_topics_active
       ON practice_topics (archived, updated_at DESC)
+    ''');
+  }
+
+  if (oldVersion < 5 && newVersion >= 5) {
+    await database.execute('''
+      CREATE TABLE moments (
+        id TEXT PRIMARY KEY NOT NULL,
+        session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+        created_at INTEGER NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('video', 'photo')),
+        local_path TEXT NOT NULL CHECK (length(trim(local_path)) > 0),
+        title TEXT NOT NULL DEFAULT '',
+        note TEXT NOT NULL DEFAULT '',
+        archived INTEGER NOT NULL DEFAULT 0 CHECK (archived IN (0, 1))
+      )
+    ''');
+    await database.execute('''
+      CREATE INDEX index_moments_session
+      ON moments (session_id, archived, created_at DESC)
     ''');
   }
 }

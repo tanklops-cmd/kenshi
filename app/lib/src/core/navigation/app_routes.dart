@@ -3,6 +3,7 @@ abstract final class AppRoutes {
   static const reflect = '/reflect';
   static const newSession = '/reflect/new-session';
   static const sessionDetail = '/reflect/sessions/:sessionId';
+  static const momentDetail = '/reflect/sessions/:sessionId/moments/:momentId';
   static const practice = '/practice';
   static const newPracticeTopic = '/practice/new-topic';
   static const practiceTopicDetail = '/practice/topics/:topicId';
@@ -13,6 +14,14 @@ abstract final class AppRoutes {
 
   static String sessionDetailLocation(String sessionId) {
     return '/reflect/sessions/${Uri.encodeComponent(sessionId)}';
+  }
+
+  static String momentDetailLocation({
+    required String sessionId,
+    required String momentId,
+  }) {
+    return '/reflect/sessions/${Uri.encodeComponent(sessionId)}'
+        '/moments/${Uri.encodeComponent(momentId)}';
   }
 
   static String practiceTopicDetailLocation(String topicId) {

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kendo_companion/src/app/app.dart';
+import 'package:kendo_companion/src/features/moment/application/moment_providers.dart';
 import 'package:kendo_companion/src/features/practice/application/practice_topic_providers.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 
+import '../../../helpers/fake_moment_repository.dart';
 import '../../../helpers/fake_practice_topic_repository.dart';
 import '../../../helpers/fake_session_repository.dart';
 
@@ -126,6 +128,7 @@ Future<void> _pumpPrepare(
           FakePracticeTopicRepository(),
         ),
         sessionRepositoryProvider.overrideWithValue(repository),
+        momentRepositoryProvider.overrideWithValue(FakeMomentRepository()),
       ],
       child: const KendoCompanionApp(),
     ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kendo_companion/src/core/widgets/autosave_text_field.dart';
+import 'package:kendo_companion/src/features/moment/presentation/moments_section.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 import 'package:kendo_companion/src/features/session/domain/session_review_updates.dart';
@@ -177,7 +178,7 @@ class _SessionWorkspaceState extends ConsumerState<_SessionWorkspace> {
             const SizedBox(height: 12),
             const _ComingSoonSection(title: 'Guidance'),
             const SizedBox(height: 8),
-            const _ComingSoonSection(title: 'Moments'),
+            MomentsSection(sessionId: _session.id),
           ],
         ],
       ],

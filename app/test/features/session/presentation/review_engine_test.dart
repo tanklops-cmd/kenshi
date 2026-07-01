@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kendo_companion/src/app/app.dart';
+import 'package:kendo_companion/src/features/moment/application/moment_providers.dart';
 import 'package:kendo_companion/src/features/session/application/session_providers.dart';
 import 'package:kendo_companion/src/features/session/domain/session.dart';
 
+import '../../../helpers/fake_moment_repository.dart';
 import '../../../helpers/fake_session_repository.dart';
 
 void main() {
@@ -16,7 +18,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [sessionRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          sessionRepositoryProvider.overrideWithValue(repository),
+          momentRepositoryProvider.overrideWithValue(FakeMomentRepository()),
+        ],
         child: const KendoCompanionApp(),
       ),
     );
