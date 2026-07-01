@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kendo_companion/src/core/navigation/app_routes.dart';
 import 'package:kendo_companion/src/features/learn/application/learn_providers.dart';
+import 'package:kendo_companion/src/features/search/presentation/search_button.dart';
 
 class LearnScreen extends ConsumerWidget {
   const LearnScreen({super.key});
@@ -12,7 +13,10 @@ class LearnScreen extends ConsumerWidget {
     final categories = ref.watch(learnRepositoryProvider).categories;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Learn')),
+      appBar: AppBar(
+        title: const Text('Learn'),
+        actions: const [SearchButton()],
+      ),
       body: ListView.separated(
         key: const ValueKey('learnCategoryList'),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),

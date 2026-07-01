@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kendo_companion/src/core/navigation/app_routes.dart';
 import 'package:kendo_companion/src/features/practice/application/practice_topic_providers.dart';
 import 'package:kendo_companion/src/features/practice/domain/practice_topic.dart';
+import 'package:kendo_companion/src/features/search/presentation/search_button.dart';
 
 class PracticeScreen extends ConsumerWidget {
   const PracticeScreen({super.key});
@@ -13,7 +14,10 @@ class PracticeScreen extends ConsumerWidget {
     final topics = ref.watch(practiceTopicsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Practice')),
+      appBar: AppBar(
+        title: const Text('Practice'),
+        actions: const [SearchButton()],
+      ),
       body: topics.when(
         data: (items) => _PracticeTopicList(topics: items),
         error: (error, stackTrace) => _PracticeTopicListError(

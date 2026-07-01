@@ -13,6 +13,7 @@ abstract final class AppRoutes {
   static const learnCategory = '/learn/categories/:category';
   static const learnTopicDetail = '/learn/topics/:topicId';
   static const prepare = '/prepare';
+  static const search = '/search';
 
   static String sessionDetailLocation(String sessionId) {
     return '/reflect/sessions/${Uri.encodeComponent(sessionId)}';

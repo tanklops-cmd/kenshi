@@ -13,6 +13,7 @@ import 'package:kendo_companion/src/features/practice/presentation/practice_scre
 import 'package:kendo_companion/src/features/practice/presentation/practice_topic_detail_screen.dart';
 import 'package:kendo_companion/src/features/prepare/presentation/prepare_screen.dart';
 import 'package:kendo_companion/src/features/reflect/presentation/reflect_screen.dart';
+import 'package:kendo_companion/src/features/search/presentation/search_screen.dart';
 import 'package:kendo_companion/src/features/session/presentation/new_session_screen.dart';
 import 'package:kendo_companion/src/features/session/presentation/session_detail_screen.dart';
 import 'package:kendo_companion/src/features/today/presentation/today_screen.dart';
@@ -67,6 +68,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.search,
+        builder: (context, state) => const SearchScreen(),
       ),
       GoRoute(
         path: AppRoutes.newSession,
